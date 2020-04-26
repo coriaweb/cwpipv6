@@ -117,23 +117,26 @@ function deleteconf($dominio, $ipv6final, $ssl){
 
 //***Eliminar DNS****////
 function eliminardns($dominio, $ipv6){
-	//$cadena_a_eliminar = '@ 14400 IN AAAA '.$ipv6;
+	$cadena_a_borrar = "@ 14400 IN AAAA ".$ipv6;
 	$filenamedns = ('/var/named/'.$dominio.'.db');
-
 	$texto = '';
 	$cadena_a_borrar = "@ 14400 IN AAAA ".$ipv6;
 	$nombre_archivo = $filenamedns;
 	$lineas = file($nombre_archivo);
-
 	foreach ($lineas as $linea) {
+		preg_match('/20[0-9][0-9]{7}/',$linea,$match);
+			if ($match) {
+				$newserial = $match[0] + 1;
+				$linea = preg_replace("/$match[0]/","$newserial", $linea);
+			}
 		if (!strstr($linea, $cadena_a_borrar)) {
 			$texto .= $linea;
 		}
 	}
-
 	$f = fopen($nombre_archivo, 'w'); 
 	fwrite($f, $texto); 
 	fclose($f);
+	echo shell_exec("rndc reload $dominio");
 }
 //***Fin Eliminar DNS****////
 
