@@ -124,11 +124,6 @@ function eliminardns($dominio, $ipv6){
 	$nombre_archivo = $filenamedns;
 	$lineas = file($nombre_archivo);
 	foreach ($lineas as $linea) {
-		preg_match('/20[0-9][0-9]{7}/',$linea,$match);
-			if ($match) {
-				$newserial = $match[0] + 1;
-				$linea = preg_replace("/$match[0]/","$newserial", $linea);
-			}
 		if (!strstr($linea, $cadena_a_borrar)) {
 			$texto .= $linea;
 		}
@@ -136,21 +131,21 @@ function eliminardns($dominio, $ipv6){
 	$f = fopen($nombre_archivo, 'w'); 
 	fwrite($f, $texto); 
 	fclose($f);
-	echo shell_exec("rndc reload $dominio");
+	dns_updateserial($dominio);
+	shell_exec("rndc reload $dominio");
 }
 //***Fin Eliminar DNS****////
 
 //***Escribir DNS****////
 function escribirdns($dominio, $ipv6){
-        $cadena_a_agregar = '@ 14400 IN AAAA '.$ipv6;
-        $filenamedns = ('/var/named/'.$dominio.'.db');
-        $data = file_get_contents($filenamedns);
-        $data .= "$cadena_a_agregar\n";
-        preg_match('/20[0-9][0-9]{7}/',$data,$match);
-        $newserial = $match[0] + 1;
-        $data = preg_replace("/$match[0]/","$newserial", $data);
-        file_put_contents($filenamedns,$data);
-        echo shell_exec("rndc reload $dominio");
+	$cadena_a_agregar = '@ 14400 IN AAAA '.$ipv6;
+	$filenamedns = ('/var/named/'.$dominio.'.db');
+	$lineas = file($filenamedns);
+	$f = fopen($filenamedns, 'a'); 
+	fwrite($f, $cadena_a_agregar."\n"); //Con \n añadimos un espacio al final del archivo de dns para que no de error.
+	fclose($f);
+	dns_updateserial($dominio);
+	shell_exec("rndc reload $dominio");
 }
 //***Fin Escribir DNS****////
 
