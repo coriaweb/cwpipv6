@@ -118,19 +118,18 @@ function deleteconf($dominio, $ipv6final, $ssl){
 //***Eliminar DNS****////
 function eliminardns($dominio, $ipv6){
 	$cadena_a_borrar = "@ 14400 IN AAAA ".$ipv6;
+	$cadena_a_borrarftp= 'ftp 14400 IN AAAA'.$ipv6;
+	$cadena_a_borrarcpanel= 'cpanel 14400 IN AAAA'.$ipv6;
+	$cadena_a_borrarwebmail= 'webmail 14400 IN AAAA'.$ipv6;
 	$filenamedns = ('/var/named/'.$dominio.'.db');
-	$texto = '';
-	$cadena_a_borrar = "@ 14400 IN AAAA ".$ipv6;
 	$nombre_archivo = $filenamedns;
-	$lineas = file($nombre_archivo);
-	foreach ($lineas as $linea) {
-		if (!strstr($linea, $cadena_a_borrar)) {
-			$texto .= $linea;
-		}
-	}
-	$f = fopen($nombre_archivo, 'w'); 
-	fwrite($f, $texto); 
-	fclose($f);
+    $cadenadns=file($filenamedns);
+    $cadenadns=str_replace($cadena_a_borrar."\n","",$cadenadns);
+	$cadenadns=str_replace($cadena_a_borrarftp."\n","",$cadenadns);
+
+	$cadenadns=str_replace($cadena_a_borrarcpanel."\n","",$cadenadns);
+	$cadenadns=str_replace($cadena_a_borrarwebmail,"",$cadenadns);
+    file_put_contents($filenamedns,$cadenadns);
 	dns_updateserial($dominio);
 	shell_exec("rndc reload $dominio");
 }
@@ -139,11 +138,12 @@ function eliminardns($dominio, $ipv6){
 //***Escribir DNS****////
 function escribirdns($dominio, $ipv6){
 	$cadena_a_agregar = '@ 14400 IN AAAA '.$ipv6;
+	$cadena_a_agregarftp= 'ftp 14400 IN AAAA'.$ipv6;
+	$cadena_a_agregarcpanel= 'cpanel 14400 IN AAAA'.$ipv6;
+	$cadena_a_agregarwebmail= 'webmail 14400 IN AAAA'.$ipv6;
 	$filenamedns = ('/var/named/'.$dominio.'.db');
-	$lineas = file($filenamedns);
-	$f = fopen($filenamedns, 'a'); 
-	fwrite($f, $cadena_a_agregar."\n"); //Con \n añadimos un espacio al final del archivo de dns para que no de error.
-	fclose($f);
+	$archivoantiguo = file_get_contents($filenamedns );
+	file_put_contents($filenamedns, $archivoantiguo.PHP_EOL.$cadena_a_agregar.PHP_EOL.$cadena_a_agregarftp.PHP_EOL.$cadena_a_agregarcpanel.PHP_EOL.$cadena_a_agregarwebmail);
 	dns_updateserial($dominio);
 	shell_exec("rndc reload $dominio");
 }
