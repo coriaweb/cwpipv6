@@ -1,5 +1,5 @@
 <?php
-$ipv6_version = "1.1";
+$ipv6_version = "1.2";
 
 //***Inicio de la función para crear las tablas necesarias con el primero uso del modulo****////
 function creartablasbd($conn) {
@@ -16,6 +16,7 @@ ipv6range INT(4) NOT NULL
 )ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 $mi_tabla2= "CREATE TABLE ipv6_domain(
 iddomain INT(6) NOT NULL,
+username VARCHAR(250) NOT NULL,
 domain VARCHAR(250) NOT NULL,
 ipv6 VARCHAR(60) NOT NULL
 )ENGINE=MyISAM DEFAULT CHARSET=utf8;";
@@ -118,17 +119,16 @@ function deleteconf($dominio, $ipv6final, $ssl){
 //***Eliminar DNS****////
 function eliminardns($dominio, $ipv6){
 	$cadena_a_borrar = "@ 14400 IN AAAA ".$ipv6;
-	$cadena_a_borrarftp= 'ftp 14400 IN AAAA'.$ipv6;
-	$cadena_a_borrarcpanel= 'cpanel 14400 IN AAAA'.$ipv6;
-	$cadena_a_borrarwebmail= 'webmail 14400 IN AAAA'.$ipv6;
+	/*$cadena_a_borrarftp= 'ftp 14400 IN AAAA '.$ipv6;
+	$cadena_a_borrarcpanel= 'cpanel 14400 IN AAAA '.$ipv6;
+	$cadena_a_borrarwebmail= 'webmail 14400 IN AAAA '.$ipv6;*/
 	$filenamedns = ('/var/named/'.$dominio.'.db');
 	$nombre_archivo = $filenamedns;
     $cadenadns=file($filenamedns);
     $cadenadns=str_replace($cadena_a_borrar."\n","",$cadenadns);
-	$cadenadns=str_replace($cadena_a_borrarftp."\n","",$cadenadns);
-
+	/*$cadenadns=str_replace($cadena_a_borrarftp."\n","",$cadenadns);
 	$cadenadns=str_replace($cadena_a_borrarcpanel."\n","",$cadenadns);
-	$cadenadns=str_replace($cadena_a_borrarwebmail,"",$cadenadns);
+	$cadenadns=str_replace($cadena_a_borrarwebmail,"",$cadenadns);*/
     file_put_contents($filenamedns,$cadenadns);
 	dns_updateserial($dominio);
 	shell_exec("rndc reload $dominio");
@@ -138,19 +138,21 @@ function eliminardns($dominio, $ipv6){
 //***Escribir DNS****////
 function escribirdns($dominio, $ipv6){
 	$cadena_a_agregar = '@ 14400 IN AAAA '.$ipv6;
-	$cadena_a_agregarftp= 'ftp 14400 IN AAAA'.$ipv6;
-	$cadena_a_agregarcpanel= 'cpanel 14400 IN AAAA'.$ipv6;
-	$cadena_a_agregarwebmail= 'webmail 14400 IN AAAA'.$ipv6;
+	/*$cadena_a_agregarftp= 'ftp 14400 IN AAAA '.$ipv6;
+	$cadena_a_agregarcpanel= 'cpanel 14400 IN AAAA '.$ipv6;
+	$cadena_a_agregarwebmail= 'webmail 14400 IN AAAA '.$ipv6;*/
 	$filenamedns = ('/var/named/'.$dominio.'.db');
 	$archivoantiguo = file_get_contents($filenamedns );
-	file_put_contents($filenamedns, $archivoantiguo.PHP_EOL.$cadena_a_agregar.PHP_EOL.$cadena_a_agregarftp.PHP_EOL.$cadena_a_agregarcpanel.PHP_EOL.$cadena_a_agregarwebmail);
+	file_put_contents($filenamedns, /*$archivoantiguo.PHP_EOL.$cadena_a_agregar.PHP_EOL.$cadena_a_agregarftp.PHP_EOL.$cadena_a_agregarcpanel.PHP_EOL.$cadena_a_agregarwebmail.PHP_EOL);
+	dns_updateserial($dominio);*/
+	$archivoantiguo.PHP_EOL.$cadena_a_agregar.PHP_EOL);
 	dns_updateserial($dominio);
 	shell_exec("rndc reload $dominio");
 }
 //***Fin Escribir DNS****////
 
 //****Generar IPv6****//
-function generaripv6($mysql_conn, $dominiointroducido, $ipintroducida){
+function generaripv6($mysql_conn, $dominiointroducido, $ipintroducida, $usernameipv6){
 	$a_Prefix = $ipintroducida;
 	// Validate input superficially with a RegExp and split accordingly
     if(!preg_match('~^([0-9a-f:]+)[[:punct:]]([0-9]+)$~i', trim($a_Prefix), $v_Slices)){
@@ -239,7 +241,7 @@ function generaripv6($mysql_conn, $dominiointroducido, $ipintroducida){
 		
 		//Insertar en la base de datos, dominio + ipv6 asignada
 		//Todo parece correcto procedemos con la inserccion de la ipv6
-		$query = "INSERT INTO ipv6_domain (domain, ipv6) VALUES('".mysqli_real_escape_string($mysql_conn,$dominiointroducido)."','".mysqli_real_escape_string($mysql_conn,$ipv6extconpuntos)."')"; 
+		$query = "INSERT INTO ipv6_domain (username, domain, ipv6) VALUES('".mysqli_real_escape_string($mysql_conn,$usernameipv6)."','".mysqli_real_escape_string($mysql_conn,$dominiointroducido)."','".mysqli_real_escape_string($mysql_conn,$ipv6extconpuntos)."')"; 
 		$registro=mysqli_query($mysql_conn,$query) or die(mysqli_error());
 		
 		//Insertamos linea en archivo de configuracion Sn SSL

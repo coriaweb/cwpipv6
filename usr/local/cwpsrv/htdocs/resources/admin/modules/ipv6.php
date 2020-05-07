@@ -12,9 +12,10 @@ if( mysqli_num_rows(mysqli_query($mysql_conn,"SHOW TABLES LIKE 'ipv6_domain' "))
 if(isset($_POST['addipv6'])){
 $dominiointroducido = $_POST['domain'];
 $ipintroducida = $_POST['ipv6'];
+$usernameipv6 = $_POST['usernameipv6'];
 
 //****Generar IPv6****//
-generaripv6($mysql_conn, $dominiointroducido, $ipintroducida);
+generaripv6($mysql_conn, $dominiointroducido, $ipintroducida, $usernameipv6);
 }
 
 if(isset($_POST['delete'])){
@@ -64,7 +65,7 @@ echo '
 	</tr>
 </thead>';
 
-$resp=mysqli_query($mysql_conn,"Select domain FROM user");
+$resp=mysqli_query($mysql_conn,"Select username, domain FROM user");
 while ($row=mysqli_fetch_assoc($resp)){	
 	echo '<tr>
 			<td>'.$row['domain'].'</td>';
@@ -97,9 +98,48 @@ while ($row=mysqli_fetch_assoc($resp)){
 			}
 		echo'</select></td>
 		<td><input class="btn btn-success btn-block" type="submit" value="Asignar IPv6"></td>';
-		echo '<input type="hidden" name="domain" value="'.$row["domain"].'" /></form>';
+		echo '<input type="hidden" name="domain" value="'.$row["domain"].'" />
+		<input type="hidden" name="usernameipv6" value="'.$row["username"].'" /></form>';
 	}
 	echo '</tr>';
+	//Si tiene dominios adicionales los añadimos para poder ponerles ipv6
+	$consultasihaydominiosadicionales= mysqli_query($mysql_conn,"SELECT * FROM domains WHERE user='".$row["username"]."'");
+	if(mysqli_num_rows($consultasihaydominiosadicionales)!=0) 
+	{ 
+		while ($rowdominiosadicionales=mysqli_fetch_array($consultasihaydominiosadicionales)){
+			echo '<tr>
+				<td><b>Adicional: &#8593;</b> '.$rowdominiosadicionales["domain"].'</td>';
+			
+				$consultasihayipv6adicional= mysqli_query($mysql_conn,"SELECT * FROM ipv6_domain WHERE domain='".$rowdominiosadicionales["domain"]."'");
+				if(mysqli_num_rows($consultasihayipv6adicional)!=0) 
+				{
+					//Consultamos y mostramos la ipv6 asignada
+					$cualipv6adicional=mysqli_fetch_array($consultasihayipv6adicional);
+					echo "
+					<form method='post' action='index.php?module=ipv6'>
+					<input type='hidden' name='delete' value='delete'>
+					<input type='hidden' name='domain' value='".$cualipv6adicional["domain"]."' />
+					<input type='hidden' name='ipv6' value='".$cualipv6adicional["ipv6"]."' />
+					<td>IPv6 asignada: <a target='_blank' href='http://[".$cualipv6adicional['ipv6']."]'><b>".$cualipv6adicional['ipv6']."</b></a></td>
+					<td><input class='btn btn-danger btn-block' btn-xs mr5 mb10 deletezone type='submit' value='Eliminar'></td>
+					</form>"; 
+				}else{
+					echo '<form method="post" action="index.php?module=ipv6">
+					<input type="hidden" name="addipv6" value="addipv6">';
+					echo '<td><select name="ipv6">';
+						//Consultamos la tabla de ipv6 para ver si hay alguna en el servidor
+						$respipv6adicional=mysqli_query($mysql_conn,"Select * FROM ipv6");
+						while ($rowipv6adicional=mysqli_fetch_array($respipv6adicional)){
+						echo '<option value="'.$rowipv6adicional['ipv6'].'/'.$rowipv6adicional['ipv6range'].'">'.$rowipv6adicional['ipv6'].'/'.$rowipv6adicional['ipv6range'].'</option>';
+						}
+					echo'</select></td>
+					<td><input class="btn btn-success btn-block" type="submit" value="Asignar IPv6"></td>';
+					echo '<input type="hidden" name="domain" value="'.$rowdominiosadicionales["domain"].'" />
+					<input type="hidden" name="usernameipv6" value="'.$row["username"].'" /></form>';
+				}
+			echo '</tr>';
+		}
+	}	
 }
 echo "</table>
 </div>";
