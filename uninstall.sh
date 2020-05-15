@@ -10,4 +10,14 @@ sd=$(grep -n "<\!-- cwp_ipv6 --" /usr/local/cwpsrv/htdocs/resources/admin/includ
 ed=$(grep -n "<\!-- end cwp_ipv6 --" /usr/local/cwpsrv/htdocs/resources/admin/include/3rdparty.php | cut -f1 -d:)
 cmd="$sd"",""$ed""d"
 sed -i.bak -e "$cmd" /usr/local/cwpsrv/htdocs/resources/admin/include/3rdparty.php
-
+while true; do
+    echo "Do you wish to remove the Database?"
+    read -p "Answer No if you intend to reinstall. (Y/n): " yn
+    case $yn in
+        [Yy]* )
+                mysql -Droot_cwp -e "drop table if exists ipv6"
+                break;;
+        [Nn]* ) break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done

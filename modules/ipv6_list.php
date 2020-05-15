@@ -1,6 +1,7 @@
 <?php
 include ("/usr/local/cwpsrv/htdocs/resources/admin/include/ipv6.php");
-
+//   IPv6 addresses Assigned to Machine
+// ip addr | grep -oP "inet6\K(.*)" | cut -d "/" -f1
 /*Recogemos valores por post de eliminar*/
 if(isset($_POST['delete']))
  
@@ -34,7 +35,7 @@ echo '<table align="left" border="0" width="30%" class="table table-bordered tab
 		<th class="sorting_disabled" tabindex="0" rowspan="1" colspan="1" style="width: 100px;" >Acciones</th>
 	</tr>
 </thead>';
-while ($row=mysqli_fetch_array($resp)){
+while ($row=@mysqli_fetch_array($resp)){
     echo '<tr>
 			<td><b>'.$row['ipv6'].'/'.$row['ipv6range'].'</b></td>
 			<td><form method="post" action="index.php?module=ipv6_list">
