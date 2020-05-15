@@ -1,5 +1,5 @@
 <?php
-<?php
+
 if(!isset($include_path)){echo "invalid access"; exit(); }
 if(!isset($_GET['lang'])){
     if(!file_exists('/usr/local/cwpsrv/htdocs/resources/admin/modules/language/en/ipv6.ini')){
@@ -12,7 +12,7 @@ if(!isset($_GET['lang'])){
 }else{
     $lang=parse_ini_file('/usr/local/cwpsrv/htdocs/resources/admin/modules/language/'.$_GET['lang'].'/ipv6.ini');
 }
-?>
+
 include ("/usr/local/cwpsrv/htdocs/resources/admin/include/ipv6.php");
 
 //Comprobamos si ya existen las tablas necesarias, si no existen se instala el modulo.
@@ -60,10 +60,10 @@ if(isset($_POST['rebuildipv6'])){
 	rebuildipv6($mysql_conn);
 }
 
-echo "$lang['TITLE']<br>";
-echo "$lang['SUB1']<br>";
-echo "$lang['SUB2']<br>";
-echo "<h3>$lang['SUB3']</h3>";	
+echo $lang['TITLE']."<br>";
+echo $lang['SUB1']."<br>";
+echo $lang['SUB2']."<br>";
+echo "<h3>".$lang['SUB3']."</h3>";	
 echo "<form method='post' action='index.php?module=ipv6'><input type='hidden' name='rebuildipv6' value='rebuildipv6'><div>Si necesitas reconstruir las IPv6 pincha aqui: <input class='btn btn-info btn-xs mr5 mb10 deletezone' type='submit' value='Reconstruir IPv6'></form></div>";
 
 
@@ -72,13 +72,13 @@ echo '
 <table align="left" border="0" width="50%" class="table table-bordered table-hover dataTable no-footer" id="userTable" role="grid" aria-describedby="userTable_info" style="width: 50%;">
 <thead>
 	<tr role="row">
-		<th class="sorting_disabled" tabindex="0" rowspan="1" colspan="1" >{$lang['domain']}</th>
+		<th class="sorting_disabled" tabindex="0" rowspan="1" colspan="1" >'.$lang["domain"].'</th>
 		<th class="sorting_disabled" tabindex="0" rowspan="1" colspan="1" >IPv6</th>
-		<th class="sorting_disabled" tabindex="0" rowspan="1" colspan="1" style="width: 100px;" >{$lang['actions']}</th>
+		<th class="sorting_disabled" tabindex="0" rowspan="1" colspan="1" style="width: 100px;" >'.$lang["actions"].'</th>
 	</tr>
 </thead>';
 
-$resp=mysqli_query($mysql_conn,"Select username, domain FROM user");
+$resp=mysqli_query($mysql_conn,"Select username, domain FROM user ORDER BY domain ASC");
 while ($row=mysqli_fetch_assoc($resp)){	
 	echo '<tr>
 			<td>'.$row['domain'].'</td>';
@@ -95,7 +95,7 @@ while ($row=mysqli_fetch_assoc($resp)){
 		<input type='hidden' name='delete' value='delete'>
 		<input type='hidden' name='domain' value='".$cualipv6["domain"]."' />
 		<input type='hidden' name='ipv6' value='".$cualipv6["ipv6"]."' />
-		<td>IPv6 asignada: <a target='_blank' href='http://[".$cualipv6['ipv6']."]'><b>".$cualipv6['ipv6']."</b></a></td>
+		<td>IPv6 {$lang['assign']}: <a target='_blank' href='http://[".$cualipv6['ipv6']."]'><b>".$cualipv6['ipv6']."</b></a></td>
 		<td><input class='btn btn-danger btn-block' btn-xs mr5 mb10 deletezone type='submit' value='Eliminar'></td>
 		</form>"; 
 	}else{
@@ -116,12 +116,12 @@ while ($row=mysqli_fetch_assoc($resp)){
 	}
 	echo '</tr>';
 	//Si tiene dominios adicionales los añadimos para poder ponerles ipv6
-	$consultasihaydominiosadicionales= mysqli_query($mysql_conn,"SELECT * FROM domains WHERE user='".$row["username"]."'");
+	$consultasihaydominiosadicionales= mysqli_query($mysql_conn,"SELECT * FROM domains WHERE user='".$row["username"]."' ORDER BY domain ASC");
 	if(mysqli_num_rows($consultasihaydominiosadicionales)!=0) 
 	{ 
 		while ($rowdominiosadicionales=mysqli_fetch_array($consultasihaydominiosadicionales)){
 			echo '<tr>
-				<td><b>{$lang['addit']}: &#8593;</b> '.$rowdominiosadicionales["domain"].'</td>';
+				<td><b>'.$lang["addit"].': &#8593;</b> '.$rowdominiosadicionales["domain"].'</td>';
 			
 				$consultasihayipv6adicional= mysqli_query($mysql_conn,"SELECT * FROM ipv6_domain WHERE domain='".$rowdominiosadicionales["domain"]."'");
 				if(mysqli_num_rows($consultasihayipv6adicional)!=0) 
