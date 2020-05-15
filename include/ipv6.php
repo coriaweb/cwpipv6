@@ -2,6 +2,7 @@
 $ipv6_version = "1.2";
 
 //***Inicio de la función para crear las tablas necesarias con el primero uso del modulo****////
+//***Start of the function to create the necessary tables with the first use of the module***//
 function creartablasbd($conn) {
 // Creamos la conexión con la base de datos
 // Aquí se revisa la conexión con MySQL
@@ -36,6 +37,7 @@ if (mysqli_query($conn, $mi_tabla1)) {
 //***Fin de la función para crear las tablas necesarias con el primero uso del modulo****////
 
 //***Inicio de la funcion para escribir la configuracion****////
+//***Start the function to write the configuration***//
 function escribirconf($dominio, $ipv6final, $ssl){
 	//Si $ssl es si, cambiamos la ruta del archivo
 	if($ssl=="ssl"){
@@ -78,6 +80,7 @@ function escribirconf($dominio, $ipv6final, $ssl){
 //***Fin de la funcion para eliminar la configuracion****////
 
 //***Inicio de la funcion para eliminar la configuracion****////
+//***Start the function to delete the configuration***//
 function deleteconf($dominio, $ipv6final, $ssl){
 	//Si $ssl es si, cambiamos la ruta del archivo
 	if($ssl=="ssl"){
@@ -117,6 +120,7 @@ function deleteconf($dominio, $ipv6final, $ssl){
 //***Fin de la funcion para eliminar la configuracion****////
 
 //***Eliminar DNS****////
+//***Delete DNS***//
 function eliminardns($dominio, $ipv6){
 	$cadena_a_borrar = "@ 14400 IN AAAA ".$ipv6;
 	/*$cadena_a_borrarftp= 'ftp 14400 IN AAAA '.$ipv6;
@@ -136,6 +140,7 @@ function eliminardns($dominio, $ipv6){
 //***Fin Eliminar DNS****////
 
 //***Escribir DNS****////
+//***Write DNS***//
 function escribirdns($dominio, $ipv6){
 	$cadena_a_agregar = '@ 14400 IN AAAA '.$ipv6;
 	/*$cadena_a_agregarftp= 'ftp 14400 IN AAAA '.$ipv6;
@@ -284,6 +289,7 @@ while ($fila = mysqli_fetch_array($resultados)){
 //****Fin reconstruir IPv6****//
 
 //****Inicio crear directorio y archivo para el hook de eliminar la cuenta****//
+//***Start create directory and file for hook to delete account***//
 function creardirectorioyarchivo(){
 	
 	$nombre_fichero = '/usr/local/cwpsrv/htdocs/resources/admin/hooks/account/account_remove.php';
@@ -310,6 +316,7 @@ function account_remove(\$array){
 //****Fin crear directorio y archivo para el hook de eliminar la cuenta****//
 
 //******Inicio Codigo para generar la primera IPv6 del rango *******//
+//**Start Code to generate the first IPv6 of the range**//
 function generarprimeraipv6delrango ($mysql_conn,$ipv6, $rango){
 	//Generamos la primera ipv6 del rango y la añadimos a la bd
 $a_Prefix = $ipv6."/".$rango;
