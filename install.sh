@@ -1,6 +1,7 @@
 #!/bin/bash
-
-
+\cp -Rf modules/* /usr/local/cwpsrv/htdocs/resources/admin/modules/
+\cp -Rf include/* /usr/local/cwpsrv/htdocs/resources/admin/include/
+\cp -Rf hooks/ /usr/local/cwpsrv/htdocs/resources/admin/
 #Add menu
 if ! grep -q "\-- cwp_ipv6 --" /usr/local/cwpsrv/htdocs/resources/admin/include/3rdparty.php
 then
