@@ -1,0 +1,6 @@
+#!/bin/bash
+read -p "Variable Name: " varname
+read -p "es translation: " vares
+read -p "en translation: " varen
+echo "$varname=\"$vares\"" >> language/es/ipv6.ini
+echo "$varname=\"$varen\"" >> language/en/ipv6.ini
