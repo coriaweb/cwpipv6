@@ -16,11 +16,11 @@ ipv6 VARCHAR(65) NOT NULL,
 ipv6range INT(4) NOT NULL
 )ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;";
 $mi_tabla2= "CREATE TABLE ipv6_domain(
-iddomain INT(6) NOT NULL,
+iddomain INT(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 username VARCHAR(250) NOT NULL,
 domain VARCHAR(250) NOT NULL,
 ipv6 VARCHAR(60) NOT NULL
-)ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+)ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;;";
 // Condicional PHP que creará la tabla
 if (mysqli_query($conn, $mi_tabla1)) {
 // Se ha creado bien la primera tabla, creamos la segunda.
