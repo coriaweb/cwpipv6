@@ -11,10 +11,10 @@ if (!$conn) {
 }
 // La variable que creara la tabla en la base de datos.
 $mi_tabla1= "CREATE TABLE ipv6(
-idipv6 INT(11) NOT NULL,
+idipv6 INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 ipv6 VARCHAR(65) NOT NULL,
 ipv6range INT(4) NOT NULL
-)ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+)ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;";
 $mi_tabla2= "CREATE TABLE ipv6_domain(
 iddomain INT(6) NOT NULL,
 username VARCHAR(250) NOT NULL,
